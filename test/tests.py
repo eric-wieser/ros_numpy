@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from ros_numpy import point_cloud2
+import ros_numpy
 from sensor_msgs.msg import PointCloud2, PointField
 
 class TestPointClouds(unittest.TestCase):
@@ -23,32 +23,26 @@ class TestPointClouds(unittest.TestCase):
         return points_arr
 
     def test_convert_dtype(self):
-        msg = PointCloud2(
-            fields=[
-                PointField(name='x', offset=0, count=1, datatype=PointField.FLOAT32),
-                PointField(name='y', offset=4, count=1, datatype=PointField.FLOAT32)
-            ],
-            point_step=8
-        )
+        fields = [
+            PointField(name='x', offset=0, count=1, datatype=PointField.FLOAT32),
+            PointField(name='y', offset=4, count=1, datatype=PointField.FLOAT32)
+        ]
         dtype = np.dtype([
             ('x', np.float32),
             ('y', np.float32)
         ])
-        conv_fields = point_cloud2.dtype_to_fields(dtype)
-        self.assertSequenceEqual(msg.fields, conv_fields, 'dtype->Pointfield Failed with simple values')
+        conv_fields = ros_numpy.msgify(PointField, dtype, plural=True)
+        self.assertSequenceEqual(fields, conv_fields, 'dtype->Pointfield Failed with simple values')
 
-        conv_dtype = point_cloud2.pointcloud2_to_dtype(msg)
+        conv_dtype = ros_numpy.numpify(fields, point_step=8)
         self.assertSequenceEqual(dtype, conv_dtype, 'dtype->Pointfield Failed with simple values')
 
     def test_convert_dtype_inner(self):
-        msg = PointCloud2(
-            fields=[
-                PointField(name='x', offset=0, count=1, datatype=PointField.FLOAT32),
-                PointField(name='y', offset=4, count=1, datatype=PointField.FLOAT32),
-                PointField(name='vectors', offset=8, count=3, datatype=PointField.FLOAT32)
-            ],
-            point_step=20
-        )
+        fields = [
+            PointField(name='x', offset=0, count=1, datatype=PointField.FLOAT32),
+            PointField(name='y', offset=4, count=1, datatype=PointField.FLOAT32),
+            PointField(name='vectors', offset=8, count=3, datatype=PointField.FLOAT32)
+        ]
 
         dtype = np.dtype([
             ('x', np.float32),
@@ -56,18 +50,18 @@ class TestPointClouds(unittest.TestCase):
             ('vectors', np.float32, (3,))
         ])
 
-        conv_fields = point_cloud2.dtype_to_fields(dtype)
-        self.assertSequenceEqual(msg.fields, conv_fields, 'dtype->Pointfield with inner dimensions')
+        conv_fields = ros_numpy.msgify(PointField, dtype, plural=True)
+        self.assertSequenceEqual(fields, conv_fields, 'dtype->Pointfield with inner dimensions')
 
-        conv_dtype = point_cloud2.pointcloud2_to_dtype(msg)
+        conv_dtype = ros_numpy.numpify(fields, point_step=8)
         self.assertEqual(dtype, conv_dtype, 'Pointfield->dtype with inner dimensions')
 
 
     def test_roundtrip(self):
 
         points_arr = self.makeArray(100)
-        cloud_msg = point_cloud2.array_to_pointcloud2(points_arr, merge_rgb=True)
-        new_points_arr = point_cloud2.pointcloud2_to_array(cloud_msg, split_rgb=True)
+        cloud_msg = ros_numpy.msgify(PointCloud2, points_arr, merge_rgb=True)
+        new_points_arr = ros_numpy.numpify(cloud_msg, split_rgb=True)
 
         np.testing.assert_equal(points_arr, new_points_arr)
 

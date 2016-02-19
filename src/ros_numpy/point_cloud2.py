@@ -37,6 +37,7 @@ Functions for working with PointCloud2.
 
 __docformat__ = "restructuredtext en"
 
+from .registry import converts_from_numpy, converts_to_numpy
 
 import numpy as np
 from sensor_msgs.msg import PointCloud2, PointField
@@ -56,12 +57,13 @@ nptype_to_pftype = dict((nptype, pftype) for pftype, nptype in type_mappings)
 pftype_sizes = {PointField.INT8: 1, PointField.UINT8: 1, PointField.INT16: 2, PointField.UINT16: 2,
                 PointField.INT32: 4, PointField.UINT32: 4, PointField.FLOAT32: 4, PointField.FLOAT64: 8}
 
-def pointcloud2_to_dtype(cloud_msg):
+@converts_to_numpy(PointField, plural=True)
+def fields_to_dtype(fields, point_step):
     '''Convert a list of PointFields to a numpy record datatype.
     '''
     offset = 0
     np_dtype_list = []
-    for f in cloud_msg.fields:
+    for f in fields:
         while offset < f.offset:
             # might be extra padding between fields
             np_dtype_list.append(('%s%d' % (DUMMY_FIELD_PREFIX, offset), np.uint8))
@@ -75,15 +77,14 @@ def pointcloud2_to_dtype(cloud_msg):
         offset += pftype_sizes[f.datatype] * f.count
 
     # might be extra padding between points
-    while offset < cloud_msg.point_step:
+    while offset < point_step:
         np_dtype_list.append(('%s%d' % (DUMMY_FIELD_PREFIX, offset), np.uint8))
         offset += 1
         
     return np_dtype_list
 
-def arr_to_fields(cloud_arr):
-    return dtype_to_fields(cloud_arr.dtype)
 
+@converts_from_numpy(PointField, plural=True)
 def dtype_to_fields(dtype):
     '''Convert a numpy record datatype into a list of PointFields.
     '''
@@ -104,6 +105,7 @@ def dtype_to_fields(dtype):
         fields.append(pf)
     return fields
 
+@converts_to_numpy(PointCloud2)
 def pointcloud2_to_array(cloud_msg, split_rgb=False, squeeze=True):
     ''' Converts a rospy PointCloud2 message to a numpy recordarray 
     
@@ -113,7 +115,7 @@ def pointcloud2_to_array(cloud_msg, split_rgb=False, squeeze=True):
     for large point clouds, this will be <much> faster.
     '''
     # construct a numpy record type equivalent to the point type of this cloud
-    dtype_list = pointcloud2_to_dtype(cloud_msg)
+    dtype_list = fields_to_dtype(cloud_msg.fields, cloud_msg.point_step)
 
     # parse the cloud into an array
     cloud_arr = np.fromstring(cloud_msg.data, dtype_list)
@@ -130,7 +132,7 @@ def pointcloud2_to_array(cloud_msg, split_rgb=False, squeeze=True):
     else:
         return np.reshape(cloud_arr, (cloud_msg.height, cloud_msg.width))
 
-
+@converts_from_numpy(PointCloud2)
 def array_to_pointcloud2(cloud_arr, stamp=None, frame_id=None, merge_rgb=False):
     '''Converts a numpy record array to a sensor_msgs.msg.PointCloud2.
     '''
@@ -148,7 +150,7 @@ def array_to_pointcloud2(cloud_arr, stamp=None, frame_id=None, merge_rgb=False):
         cloud_msg.header.frame_id = frame_id
     cloud_msg.height = cloud_arr.shape[0]
     cloud_msg.width = cloud_arr.shape[1]
-    cloud_msg.fields = arr_to_fields(cloud_arr)
+    cloud_msg.fields = dtype_to_fields(cloud_arr.dtype)
     cloud_msg.is_bigendian = False # assumption
     cloud_msg.point_step = cloud_arr.dtype.itemsize
     cloud_msg.row_step = cloud_msg.point_step*cloud_arr.shape[1]

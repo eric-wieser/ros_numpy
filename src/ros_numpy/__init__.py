@@ -1,1 +1,3 @@
-from .point_cloud2 import *
+from registry import numpify, msgify
+
+import point_cloud2
