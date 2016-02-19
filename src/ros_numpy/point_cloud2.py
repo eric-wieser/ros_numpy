@@ -77,20 +77,29 @@ def pointcloud2_to_dtype(cloud_msg):
     return np_dtype_list
 
 def arr_to_fields(cloud_arr):
+    return dtype_to_fields(cloud_arr.dtype)
+
+def dtype_to_fields(dtype):
     '''Convert a numpy record datatype into a list of PointFields.
     '''
     fields = []
-    for field_name in cloud_arr.dtype.names:
-        np_field_type, field_offset = cloud_arr.dtype.fields[field_name]
+    for field_name in dtype.names:
+        np_field_type, field_offset = dtype.fields[field_name]
         pf = PointField()
         pf.name = field_name
+        if np_field_type.subdtype:
+            item_dtype, shape = np_field_type.subdtype
+            pf.count = np.prod(shape)
+            np_field_type = item_dtype
+        else:
+            pf.count = 1
+
         pf.datatype = nptype_to_pftype[np_field_type]
         pf.offset = field_offset
-        pf.count = 1 # is this ever more than one?
         fields.append(pf)
     return fields
 
-def pointcloud2_to_array(cloud_msg, split_rgb=False):
+def pointcloud2_to_array(cloud_msg, split_rgb=False, squeeze=True):
     ''' Converts a rospy PointCloud2 message to a numpy recordarray 
     
     Reshapes the returned array to have shape (height, width), even if the height is 1.
@@ -111,7 +120,11 @@ def pointcloud2_to_array(cloud_msg, split_rgb=False):
     if split_rgb:
         cloud_arr = split_rgb_field(cloud_arr)
     
-    return np.reshape(cloud_arr, (cloud_msg.height, cloud_msg.width))
+    if squeeze and cloud_msg.height == 1:
+        return np.reshape(cloud_arr, (cloud_msg.width,))
+    else:
+        return np.reshape(cloud_arr, (cloud_msg.height, cloud_msg.width))
+
 
 def array_to_pointcloud2(cloud_arr, stamp=None, frame_id=None, merge_rgb=False):
     '''Converts a numpy record array to a sensor_msgs.msg.PointCloud2.
