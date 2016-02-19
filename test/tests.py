@@ -60,8 +60,8 @@ class TestPointClouds(unittest.TestCase):
     def test_roundtrip(self):
 
         points_arr = self.makeArray(100)
-        cloud_msg = ros_numpy.msgify(PointCloud2, points_arr, merge_rgb=True)
-        new_points_arr = ros_numpy.numpify(cloud_msg, split_rgb=True)
+        cloud_msg = ros_numpy.msgify(PointCloud2, points_arr)
+        new_points_arr = ros_numpy.numpify(cloud_msg)
 
         np.testing.assert_equal(points_arr, new_points_arr)
 

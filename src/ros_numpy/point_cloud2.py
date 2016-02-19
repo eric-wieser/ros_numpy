@@ -106,7 +106,7 @@ def dtype_to_fields(dtype):
     return fields
 
 @converts_to_numpy(PointCloud2)
-def pointcloud2_to_array(cloud_msg, split_rgb=False, squeeze=True):
+def pointcloud2_to_array(cloud_msg, squeeze=True):
     ''' Converts a rospy PointCloud2 message to a numpy recordarray 
     
     Reshapes the returned array to have shape (height, width), even if the height is 1.
@@ -123,9 +123,6 @@ def pointcloud2_to_array(cloud_msg, split_rgb=False, squeeze=True):
     # remove the dummy fields that were added
     cloud_arr = cloud_arr[
         [fname for fname, _type in dtype_list if not (fname[:len(DUMMY_FIELD_PREFIX)] == DUMMY_FIELD_PREFIX)]]
-
-    if split_rgb:
-        cloud_arr = split_rgb_field(cloud_arr)
     
     if squeeze and cloud_msg.height == 1:
         return np.reshape(cloud_arr, (cloud_msg.width,))
@@ -133,12 +130,9 @@ def pointcloud2_to_array(cloud_msg, split_rgb=False, squeeze=True):
         return np.reshape(cloud_arr, (cloud_msg.height, cloud_msg.width))
 
 @converts_from_numpy(PointCloud2)
-def array_to_pointcloud2(cloud_arr, stamp=None, frame_id=None, merge_rgb=False):
+def array_to_pointcloud2(cloud_arr, stamp=None, frame_id=None):
     '''Converts a numpy record array to a sensor_msgs.msg.PointCloud2.
     '''
-    if merge_rgb:
-        cloud_arr = merge_rgb_fields(cloud_arr)
-
     # make it 2d (even if height will be 1)
     cloud_arr = np.atleast_2d(cloud_arr)
 
@@ -237,7 +231,7 @@ def get_xyz_points(cloud_array, remove_nans=True, dtype=np.float):
         cloud_array = cloud_array[mask]
     
     # pull out x, y, and z values
-    points = np.zeros(list(cloud_array.shape) + [3], dtype=dtype)
+    points = np.zeros(cloud_array.shape + (3,), dtype=dtype)
     points[...,0] = cloud_array['x']
     points[...,1] = cloud_array['y']
     points[...,2] = cloud_array['z']
