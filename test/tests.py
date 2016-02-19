@@ -22,29 +22,45 @@ class TestPointClouds(unittest.TestCase):
 
         return points_arr
 
-    def test_from_dtype(self):
-        expect = [
-            PointField(name='x', offset=0, count=1, datatype=PointField.FLOAT32),
-            PointField(name='y', offset=4, count=1, datatype=PointField.FLOAT32)
-        ]
-        actual = point_cloud2.dtype_to_fields(np.dtype([
+    def test_convert_dtype(self):
+        msg = PointCloud2(
+            fields=[
+                PointField(name='x', offset=0, count=1, datatype=PointField.FLOAT32),
+                PointField(name='y', offset=4, count=1, datatype=PointField.FLOAT32)
+            ],
+            point_step=8
+        )
+        dtype = np.dtype([
             ('x', np.float32),
             ('y', np.float32)
-        ]))
-        self.assertEqual(expect, actual, 'dtype->Pointfield Failed with simple values')
+        ])
+        conv_fields = point_cloud2.dtype_to_fields(dtype)
+        self.assertSequenceEqual(msg.fields, conv_fields, 'dtype->Pointfield Failed with simple values')
 
-    def test_from_dtype_count(self):
-        expect = [
-            PointField(name='x', offset=0, count=1, datatype=PointField.FLOAT32),
-            PointField(name='y', offset=4, count=1, datatype=PointField.FLOAT32),
-            PointField(name='vectors', offset=8, count=3, datatype=PointField.FLOAT32)
-        ]
-        actual = point_cloud2.dtype_to_fields(np.dtype([
+        conv_dtype = point_cloud2.pointcloud2_to_dtype(msg)
+        self.assertSequenceEqual(dtype, conv_dtype, 'dtype->Pointfield Failed with simple values')
+
+    def test_convert_dtype_inner(self):
+        msg = PointCloud2(
+            fields=[
+                PointField(name='x', offset=0, count=1, datatype=PointField.FLOAT32),
+                PointField(name='y', offset=4, count=1, datatype=PointField.FLOAT32),
+                PointField(name='vectors', offset=8, count=3, datatype=PointField.FLOAT32)
+            ],
+            point_step=20
+        )
+
+        dtype = np.dtype([
             ('x', np.float32),
             ('y', np.float32),
             ('vectors', np.float32, (3,))
-        ]))
-        self.assertEqual(expect, actual, 'dtype->Pointfield with inner dimensions')
+        ])
+
+        conv_fields = point_cloud2.dtype_to_fields(dtype)
+        self.assertSequenceEqual(msg.fields, conv_fields, 'dtype->Pointfield with inner dimensions')
+
+        conv_dtype = point_cloud2.pointcloud2_to_dtype(msg)
+        self.assertEqual(dtype, conv_dtype, 'Pointfield->dtype with inner dimensions')
 
 
     def test_roundtrip(self):

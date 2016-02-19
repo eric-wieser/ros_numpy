@@ -66,8 +66,13 @@ def pointcloud2_to_dtype(cloud_msg):
             # might be extra padding between fields
             np_dtype_list.append(('%s%d' % (DUMMY_FIELD_PREFIX, offset), np.uint8))
             offset += 1
-        np_dtype_list.append((f.name, pftype_to_nptype[f.datatype]))
-        offset += pftype_sizes[f.datatype]
+
+        dtype = pftype_to_nptype[f.datatype]
+        if f.count != 1:
+            dtype = np.dtype((dtype, f.count))
+
+        np_dtype_list.append((f.name, dtype))
+        offset += pftype_sizes[f.datatype] * f.count
 
     # might be extra padding between points
     while offset < cloud_msg.point_step:
