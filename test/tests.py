@@ -3,6 +3,7 @@ import numpy as np
 
 import ros_numpy
 from sensor_msgs.msg import PointCloud2, PointField
+from ros_numpy import numpy_msg
 
 class TestPointClouds(unittest.TestCase):
     def makeArray(self, npoints):
@@ -61,6 +62,14 @@ class TestPointClouds(unittest.TestCase):
 
         points_arr = self.makeArray(100)
         cloud_msg = ros_numpy.msgify(PointCloud2, points_arr)
+        new_points_arr = ros_numpy.numpify(cloud_msg)
+
+        np.testing.assert_equal(points_arr, new_points_arr)
+
+    def test_roundtrip_numpy(self):
+
+        points_arr = self.makeArray(100)
+        cloud_msg = ros_numpy.msgify(numpy_msg(PointCloud2), points_arr)
         new_points_arr = ros_numpy.numpify(cloud_msg)
 
         np.testing.assert_equal(points_arr, new_points_arr)
