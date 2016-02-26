@@ -55,6 +55,7 @@ def image_to_numpy(msg):
 	
 	dtype_class, channels = name_to_dtypes[msg.encoding]
 	dtype = np.dtype(dtype_class)
+	dtype = dtype.newbyteorder('>' if msg.is_bigendian else '<')
 	shape = (msg.height, msg.width, channels)
 
 	data = np.fromstring(msg.data, dtype=dtype).reshape(shape)
@@ -79,6 +80,9 @@ def numpy_to_image(arr, encoding):
 	# extract width, height, and channels
 	dtype_class, exp_channels = name_to_dtypes[encoding]
 	dtype = np.dtype(dtype_class)
+
+
+
 	if len(arr.shape) == 2:
 		im.height, im.width, channels = arr.shape + (1,)
 	elif len(arr.shape) == 3:
@@ -91,14 +95,15 @@ def numpy_to_image(arr, encoding):
 		raise TypeError("Array has {} channels, {} requires {}".format(
 			channels, encoding, exp_channels
 		))
-	if dtype != arr.dtype:
+	if dtype_class != arr.dtype.type:
 		raise TypeError("Array is {}, {} requires {}".format(
-			arr.dtype, encoding, dtype
+			arr.dtype.type, encoding, dtype_class
 		))
 
 	# make the array contiguous in memory, as mostly required by the format
 	contig = np.ascontiguousarray(arr)
 	im.data = contig.tostring()
 	im.step = contig.strides[0]
+	im.is_bigendian = arr.dtype.byteorder == '>'
 
 	return im

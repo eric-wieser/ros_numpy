@@ -89,6 +89,22 @@ class TestImages(unittest.TestCase):
 
         np.testing.assert_equal(arr, arr2)
 
+    def test_roundtrip_endianness(self):
+        arr = np.random.randint(0, 256, size=(240, 360)).astype('>u2')
+        msg = ros_numpy.msgify(Image, arr, encoding='mono16')
+        self.assertEqual(msg.is_bigendian, True)
+        arr2 = ros_numpy.numpify(msg)
+
+        np.testing.assert_equal(arr, arr2)
+
+        arr = np.random.randint(0, 256, size=(240, 360)).astype('<u2')
+        msg = ros_numpy.msgify(Image, arr, encoding='mono16')
+        self.assertEqual(msg.is_bigendian, False)
+        arr2 = ros_numpy.numpify(msg)
+
+        np.testing.assert_equal(arr, arr2)
+
+
     def test_bad_encodings(self):
         mono_arr = np.random.randint(0, 256, size=(240, 360)).astype(np.uint8)
         mono_arrf = np.random.randint(0, 256, size=(240, 360)).astype(np.float32)
