@@ -89,7 +89,7 @@ class TestImages(unittest.TestCase):
 
         np.testing.assert_equal(arr, arr2)
 
-    def test_roundtrip_endianness(self):
+    def test_roundtrip_big_endian(self):
         arr = np.random.randint(0, 256, size=(240, 360)).astype('>u2')
         msg = ros_numpy.msgify(Image, arr, encoding='mono16')
         self.assertEqual(msg.is_bigendian, True)
@@ -97,6 +97,7 @@ class TestImages(unittest.TestCase):
 
         np.testing.assert_equal(arr, arr2)
 
+    def test_roundtrip_little_endian(self):
         arr = np.random.randint(0, 256, size=(240, 360)).astype('<u2')
         msg = ros_numpy.msgify(Image, arr, encoding='mono16')
         self.assertEqual(msg.is_bigendian, False)

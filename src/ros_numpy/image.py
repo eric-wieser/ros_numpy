@@ -1,3 +1,4 @@
+import sys
 
 from .registry import converts_from_numpy, converts_to_numpy
 from sensor_msgs.msg import Image
@@ -80,9 +81,6 @@ def numpy_to_image(arr, encoding):
 	# extract width, height, and channels
 	dtype_class, exp_channels = name_to_dtypes[encoding]
 	dtype = np.dtype(dtype_class)
-
-
-
 	if len(arr.shape) == 2:
 		im.height, im.width, channels = arr.shape + (1,)
 	elif len(arr.shape) == 3:
@@ -104,6 +102,9 @@ def numpy_to_image(arr, encoding):
 	contig = np.ascontiguousarray(arr)
 	im.data = contig.tostring()
 	im.step = contig.strides[0]
-	im.is_bigendian = arr.dtype.byteorder == '>'
+	im.is_bigendian = (
+		arr.dtype.byteorder == '>' or 
+		arr.dtype.byteorder == '=' and sys.byteorder == 'big'
+	)
 
 	return im
