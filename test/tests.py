@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 import ros_numpy
-from sensor_msgs.msg import PointCloud2, PointField
+from sensor_msgs.msg import PointCloud2, PointField, Image
 from ros_numpy import numpy_msg
 
 class TestPointClouds(unittest.TestCase):
@@ -73,6 +73,37 @@ class TestPointClouds(unittest.TestCase):
         new_points_arr = ros_numpy.numpify(cloud_msg)
 
         np.testing.assert_equal(points_arr, new_points_arr)
+
+class TestImages(unittest.TestCase):
+    def test_roundtrip_rgb8(self):
+        arr = np.random.randint(0, 256, size=(240, 360, 3)).astype(np.uint8)
+        msg = ros_numpy.msgify(Image, arr, encoding='rgb8')
+        arr2 = ros_numpy.numpify(msg)
+
+        np.testing.assert_equal(arr, arr2)
+
+    def test_roundtrip_mono(self):
+        arr = np.random.randint(0, 256, size=(240, 360)).astype(np.uint8)
+        msg = ros_numpy.msgify(Image, arr, encoding='mono8')
+        arr2 = ros_numpy.numpify(msg)
+
+        np.testing.assert_equal(arr, arr2)
+
+    def test_bad_encodings(self):
+        mono_arr = np.random.randint(0, 256, size=(240, 360)).astype(np.uint8)
+        mono_arrf = np.random.randint(0, 256, size=(240, 360)).astype(np.float32)
+        rgb_arr = np.random.randint(0, 256, size=(240, 360, 3)).astype(np.uint8)
+        rgb_arrf = np.random.randint(0, 256, size=(240, 360, 3)).astype(np.float32)
+
+        with self.assertRaises(TypeError):
+            msg = ros_numpy.msgify(Image, rgb_arr, encoding='mono8')
+        with self.assertRaises(TypeError):
+            msg = ros_numpy.msgify(Image, mono_arrf, encoding='mono8')
+
+        with self.assertRaises(TypeError):
+            msg = ros_numpy.msgify(Image, rgb_arrf, encoding='rgb8')
+        with self.assertRaises(TypeError):
+            msg = ros_numpy.msgify(Image, mono_arr, encoding='rgb8')
 
 
 if __name__ == '__main__':
