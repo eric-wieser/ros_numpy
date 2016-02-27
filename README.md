@@ -2,7 +2,7 @@
 Tools for converting ROS messages to and from numpy arrays. Contains two functions:
 
 * `arr = numpify(msg, ...)` - try to get a numpy object from a message
-* `msg = numpify(MessageType, arr, ...)` - try and convert a numpy object to a message
+* `msg = msgify(MessageType, arr, ...)` - try and convert a numpy object to a message
 
 Currently supports:
 
