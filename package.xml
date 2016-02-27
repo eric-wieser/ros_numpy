@@ -37,6 +37,7 @@
   <!--   <buildtool_depend>catkin</buildtool_depend> -->
   <!-- Use run_depend for packages you need at runtime: -->
   <run_depend>python-numpy</run_depend>
+  <run_depend>sensor_msgs</run_depend>
   <!-- Use test_depend for packages you need only for testing: -->
   <test_depend>unittest</test_depend>
   <test_depend>rostest</test_depend>
