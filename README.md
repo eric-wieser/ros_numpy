@@ -16,7 +16,7 @@ Currently supports:
    ])
    data['x'] = np.arange(100)
    data['y'] = data['x']*2
-   data['z'] = np.arange(100)[:,None]
+   data['vectors'] = np.arange(100)[:,np.newaxis]
    
    msg = ros_numpy.msgify(PointCloud2, data)
    ```
@@ -26,6 +26,7 @@ Currently supports:
    ```
 
 * `sensor_msgs.msg.Image` &harr; 2/3-D `np.array`, similar to the function of `cv_bridge`, but without the dependency on `cv2`
+
 
 Support for more types can be added with:
 
@@ -40,3 +41,12 @@ def convert(my_array):
 ```
 
 Any extra args or kwargs to `numpify` or `msgify` will be forwarded to your conversion function
+
+
+## Future work
+
+* Add simple conversions for:
+
+  * `geometry_msgs.msg.Vector`
+  * `geometry_msgs.msg.Point`
+  * `geometry_msgs.msg.Inertia`
