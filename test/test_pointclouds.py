@@ -75,5 +75,4 @@ class TestPointClouds(unittest.TestCase):
         np.testing.assert_equal(points_arr, new_points_arr)
 
 if __name__ == '__main__':
-    import rostest
-    rostest.rosrun('ros_numpy', 'test_pointclouds', TestPointClouds)
+    unittest.main()
