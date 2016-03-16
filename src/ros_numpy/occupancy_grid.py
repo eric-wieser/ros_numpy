@@ -8,7 +8,7 @@ from numpy.lib.stride_tricks import as_strided
 
 @converts_to_numpy(OccupancyGrid)
 def occupancygrid_to_numpy(msg):
-	data = np.fromstring(msg.data, dtype=np.int8).reshape(msg.info.height, msg.info.width)
+	data = np.asarray(msg.data, dtype=np.int8).reshape(msg.info.height, msg.info.width)
 
 	return np.ma.array(data, mask=data==-1, fill_value=-1)
 
