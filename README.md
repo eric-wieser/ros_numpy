@@ -26,7 +26,12 @@ Currently supports:
    ```
 
 * `sensor_msgs.msg.Image` &harr; 2/3-D `np.array`, similar to the function of `cv_bridge`, but without the dependency on `cv2`
-
+* `nav_msgs.msg.OccupancyGrid` &harr; `np.ma.array`
+* `geometry.msg.Vector3` &harr; 1-D `np.array`. `hom=True` gives `[x, y, z, 0]`
+* `geometry.msg.Point` &harr; 1-D `np.array`. `hom=True` gives `[x, y, z, 1]`
+* `geometry.msg.Quaternion` &harr; 1-D `np.array`, `[x, y, z, w]`
+* `geometry.msg.Transform` &harr; 4&times;4 `np.array`, the homogeneous transformation matrix
+* `geometry.msg.Pose` &harr; 4&times;4 `np.array`, the homogeneous transformation matrix from the origin
 
 Support for more types can be added with:
 
@@ -47,6 +52,4 @@ Any extra args or kwargs to `numpify` or `msgify` will be forwarded to your conv
 
 * Add simple conversions for:
 
-  * `geometry_msgs.msg.Vector`
-  * `geometry_msgs.msg.Point`
   * `geometry_msgs.msg.Inertia`
