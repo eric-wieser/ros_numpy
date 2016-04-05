@@ -18,4 +18,4 @@ def numpy_msg(cls):
 	return res
 
 # patch the original for good measure
-rospy.numpy_msg.numpy_msg = _numpy_msg
+rospy.numpy_msg.numpy_msg = numpy_msg
