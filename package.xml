@@ -19,6 +19,7 @@
   <run_depend>sensor_msgs</run_depend>
   <run_depend>nav_msgs</run_depend>
   <run_depend>geometry_msgs</run_depend>
+  <run_depend>tf</run_depend>
 
   <buildtool_depend>catkin</buildtool_depend>
 
