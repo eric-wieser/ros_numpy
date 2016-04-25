@@ -21,6 +21,9 @@ def numpy_to_occupancy_grid(arr, info=None):
 		raise TypeError('Array must be of int8s')
 
 	grid = OccupancyGrid()
+	if isinstance(arr, np.ma.MaskedArray):
+		# We assume that the masked value are already -1, for speed
+		arr = arr.data
 	grid.data = arr.ravel()
 	grid.info = info or MapMetaData()
 	grid.info.height = arr.shape[0]
