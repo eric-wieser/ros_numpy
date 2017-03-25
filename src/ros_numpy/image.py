@@ -17,6 +17,16 @@ name_to_dtypes = {
 	"bgra16":  (np.uint16, 4),
 	"mono8":   (np.uint8,  1),
 	"mono16":  (np.uint16, 1),
+	
+    # for bayer image (based on cv_bridge.cpp)
+	"bayer_rggb8":	(np.uint8,  1),
+	"bayer_bggr8":	(np.uint8,  1),
+	"bayer_gbrg8":	(np.uint8,  1),
+	"bayer_grbg8":	(np.uint8,  1),
+	"bayer_rggb16":	(np.uint16, 1),
+	"bayer_bggr16":	(np.uint16, 1),
+	"bayer_gbrg16":	(np.uint16, 1),
+	"bayer_grbg16":	(np.uint16, 1),
 
     # OpenCV CvMat types
 	"8UC1":    (np.uint8,   1),
