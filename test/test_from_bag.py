@@ -3,7 +3,7 @@ import numpy as np
 import ros_numpy
 from rosbag import Bag
 from ros_numpy import msgify
-from sensor_msgs.msg import Image, PointCloud2
+from sensor_msgs.msg import Image, PointCloud2, CompressedImage
 from nav_msgs.msg import OccupancyGrid
 from geometry_msgs.msg import Vector3, Point, Quaternion, Transform, Pose
 
@@ -99,6 +99,18 @@ class TestImagesFromRosbag(unittest.TestCase):
 		for topic, bagmsg, time in bag.read_messages(topics=['/pose']):
 			arr = ros_numpy.numpify(bagmsg)
 			msg = Pose()
+			for slot in msg.__slots__:
+				# Go thru all the slots, data, header...
+				setattr(msg, slot, getattr(bagmsg, slot))
+			arr2 = ros_numpy.numpify(msg)
+			np.testing.assert_equal(arr, arr2)
+
+	def test_compressed_image_from_bag(self):
+		bag = Bag('test.bag')
+		# There is only one message
+		for topic, bagmsg, time in bag.read_messages(topics=['/compressedimage']):
+			arr = ros_numpy.numpify(bagmsg)
+			msg = CompressedImage()
 			for slot in msg.__slots__:
 				# Go thru all the slots, data, header...
 				setattr(msg, slot, getattr(bagmsg, slot))
