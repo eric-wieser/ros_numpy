@@ -5,6 +5,8 @@ import ros_numpy
 from tf import transformations
 
 from geometry_msgs.msg import Vector3, Quaternion, Transform, Point, Pose
+from geometry_msgs.msg import TransformStamped, Vector3Stamped, QuaternionStamped, PointStamped, PoseStamped
+
 
 class TestGeometry(unittest.TestCase):
     def test_point(self):
@@ -74,6 +76,82 @@ class TestGeometry(unittest.TestCase):
         np.testing.assert_allclose(msg.orientation.y, t.orientation.y)
         np.testing.assert_allclose(msg.orientation.z, t.orientation.z)
         np.testing.assert_allclose(msg.orientation.w, t.orientation.w)
+
+    def test_pointstamped(self):
+        ps = PointStamped()
+        p = Point(1, 2, 3)
+        ps.point = p
+
+        p_arr = ros_numpy.numpify(ps)
+        np.testing.assert_array_equal(p_arr, [1, 2, 3])
+
+        p_arrh = ros_numpy.numpify(ps, hom=True)
+        np.testing.assert_array_equal(p_arrh, [1, 2, 3, 1])
+
+        self.assertEqual(p, ros_numpy.msgify(Point, p_arr))
+        self.assertEqual(p, ros_numpy.msgify(Point, p_arrh))
+        self.assertEqual(p, ros_numpy.msgify(Point, p_arrh * 2))
+
+    def test_vector3stamped(self):
+        vs = Vector3Stamped()
+        v = Vector3(1, 2, 3)
+        vs.vector = v
+
+        v_arr = ros_numpy.numpify(vs)
+        np.testing.assert_array_equal(v_arr, [1, 2, 3])
+
+        v_arrh = ros_numpy.numpify(vs, hom=True)
+        np.testing.assert_array_equal(v_arrh, [1, 2, 3, 0])
+
+        self.assertEqual(v, ros_numpy.msgify(Vector3, v_arr))
+        self.assertEqual(v, ros_numpy.msgify(Vector3, v_arrh))
+
+        with self.assertRaises(AssertionError):
+            ros_numpy.msgify(Vector3, np.array([0, 0, 0, 1]))
+
+    def test_transformstamped(self):
+        ts = TransformStamped()
+        t = Transform(
+            translation=Vector3(1, 2, 3),
+            rotation=Quaternion(*transformations.quaternion_from_euler(np.pi, 0, 0))
+        )
+        ts.transform = t
+
+        t_mat = ros_numpy.numpify(ts)
+
+        np.testing.assert_allclose(t_mat.dot([0, 0, 1, 1]), [1.0, 2.0, 2.0, 1.0])
+
+        msg = ros_numpy.msgify(Transform, t_mat)
+
+        np.testing.assert_allclose(msg.translation.x, t.translation.x)
+        np.testing.assert_allclose(msg.translation.y, t.translation.y)
+        np.testing.assert_allclose(msg.translation.z, t.translation.z)
+        np.testing.assert_allclose(msg.rotation.x, t.rotation.x)
+        np.testing.assert_allclose(msg.rotation.y, t.rotation.y)
+        np.testing.assert_allclose(msg.rotation.z, t.rotation.z)
+        np.testing.assert_allclose(msg.rotation.w, t.rotation.w)
+
+    def test_posestamped(self):
+        pss = PoseStamped()
+        ps = Pose(
+            position=Point(1.0, 2.0, 3.0),
+            orientation=Quaternion(*transformations.quaternion_from_euler(np.pi, 0, 0))
+        )
+        pss.pose = ps
+
+        t_mat = ros_numpy.numpify(pss)
+
+        np.testing.assert_allclose(t_mat.dot([0, 0, 1, 1]), [1.0, 2.0, 2.0, 1.0])
+
+        msg = ros_numpy.msgify(Pose, t_mat)
+
+        np.testing.assert_allclose(msg.position.x, ps.position.x)
+        np.testing.assert_allclose(msg.position.y, ps.position.y)
+        np.testing.assert_allclose(msg.position.z, ps.position.z)
+        np.testing.assert_allclose(msg.orientation.x, ps.orientation.x)
+        np.testing.assert_allclose(msg.orientation.y, ps.orientation.y)
+        np.testing.assert_allclose(msg.orientation.z, ps.orientation.z)
+        np.testing.assert_allclose(msg.orientation.w, ps.orientation.w)
 
 if __name__ == '__main__':
     unittest.main()

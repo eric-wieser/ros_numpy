@@ -26,12 +26,15 @@ Currently supports:
    ```
 
 * `sensor_msgs.msg.Image` &harr; 2/3-D `np.array`, similar to the function of `cv_bridge`, but without the dependency on `cv2`
+* `sensor_msgs.msg.CompressedImage` &rarr; `np.array`. 
 * `nav_msgs.msg.OccupancyGrid` &harr; `np.ma.array`
-* `geometry.msg.Vector3` &harr; 1-D `np.array`. `hom=True` gives `[x, y, z, 0]`
-* `geometry.msg.Point` &harr; 1-D `np.array`. `hom=True` gives `[x, y, z, 1]`
-* `geometry.msg.Quaternion` &harr; 1-D `np.array`, `[x, y, z, w]`
-* `geometry.msg.Transform` &harr; 4&times;4 `np.array`, the homogeneous transformation matrix
-* `geometry.msg.Pose` &harr; 4&times;4 `np.array`, the homogeneous transformation matrix from the origin
+* `geometry_msg.Vector3` &harr; 1-D `np.array`. `hom=True` gives `[x, y, z, 0]`
+* `geometry_msg.Point` &harr; 1-D `np.array`. `hom=True` gives `[x, y, z, 1]`
+* `geometry_msg.Quaternion` &harr; 1-D `np.array`, `[x, y, z, w]`
+* `geometry_msg.Transform` &harr; 4&times;4 `np.array`, the homogeneous transformation matrix
+* `geometry_msg.Pose` &harr; 4&times;4 `np.array`, the homogeneous transformation matrix from the origin
+* `geometry_msg.XXXXXStamped` &rarr; `np.array`.
+* All the previous types but directly taken from a rosbag.
 
 Support for more types can be added with:
 

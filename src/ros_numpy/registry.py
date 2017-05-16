@@ -2,6 +2,7 @@ import functools
 import genpy
 import collections
 from . import numpy_msg
+from importlib import import_module
 
 _to_numpy = {}
 _from_numpy = {}
@@ -32,6 +33,15 @@ def numpify(msg, *args, **kwargs):
 			raise ValueError("Cannot determine the type of an empty Collection")
 		conv = _to_numpy.get((msg[0].__class__, True))
 
+	if not conv:
+		# a rosbag message class name looks like '_sensor_msgs__Image'
+		module_name, msg_class_name = msg.__class__.__name__.split('__')
+		if module_name and msg_class_name:
+			convertable_class_names = [c.__name__ for c in zip(*_to_numpy.keys())[0]]
+			module_name = module_name.lstrip('_') 
+			module = import_module(module_name + '.msg')
+			class_ = getattr(module, msg_class_name)
+			conv = _to_numpy.get((class_, False))
 
 	if not conv:
 		raise ValueError("Unable to convert message {} - only supports {}".format(
