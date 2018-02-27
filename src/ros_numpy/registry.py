@@ -32,6 +32,21 @@ def numpify(msg, *args, **kwargs):
 			raise ValueError("Cannot determine the type of an empty Collection")
 		conv = _to_numpy.get((msg[0].__class__, True))
 
+	if not conv:
+		# on messages coming from a rosbag, __class__ instead of
+		# looking like '_sensor_msgs__Image' looks like tmpldS_vh._sensor_msgs__Image
+		# so we try to check for the _type instead ('sensor_msgs/Image')
+		for class_instance, _ in _to_numpy.keys():
+			if msg._type == class_instance._type:
+				# we make sure it's the same as the installed message
+				if msg._md5sum == class_instance._md5sum:
+					conv = _to_numpy.get((class_instance, False))
+					break
+				else:
+					raise ValueError("Unable to convert message of type {}, ".format(msg._type) +
+					 "the md5sum of message to numpify and the installed message differ: {} != {}".format(
+						msg._md5sum, class_instance._md5sum)
+					)
 
 	if not conv:
 		raise ValueError("Unable to convert message {} - only supports {}".format(
