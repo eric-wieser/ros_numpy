@@ -34,6 +34,7 @@ Currently supports:
 * `geometry_msg.Transform` &harr; 4&times;4 `np.array`, the homogeneous transformation matrix
 * `geometry_msg.Pose` &harr; 4&times;4 `np.array`, the homogeneous transformation matrix from the origin
 * `geometry_msg.XXXXXStamped` &rarr; `np.array`.
+* All the previous types but directly taken from a rosbag (meanwhile you have the same version of the messages, i.e. same md5sum).
 
 Support for more types can be added with:
 
