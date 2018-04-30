@@ -125,7 +125,7 @@ class TestImagesFromRosbag(unittest.TestCase):
 			# ros-indigo-geometry-msgs 1.11.9-0trusty-20160627-170848-0700
 			# Pose msg has md5sum e45d45a5a1ce597b249e23fb30fc871f
 			# so we use one made up from:
-			from different_md5_Pose import Pose as different_md5_Pose
+			from .different_md5_Pose import Pose as different_md5_Pose
 			msg = different_md5_Pose()
 			with self.assertRaises(ValueError):
 				arr = ros_numpy.numpify(msg)
