@@ -69,7 +69,7 @@ def image_to_numpy(msg):
 	dtype = dtype.newbyteorder('>' if msg.is_bigendian else '<')
 	shape = (msg.height, msg.width, channels)
 
-	data = np.fromstring(msg.data, dtype=dtype).reshape(shape)
+	data = np.frombuffer(msg.data, dtype=dtype).reshape(shape)
 	data.strides = (
 		msg.step,
 		dtype.itemsize * channels,
