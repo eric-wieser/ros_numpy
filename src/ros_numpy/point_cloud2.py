@@ -238,5 +238,26 @@ def get_xyz_points(cloud_array, remove_nans=True, dtype=np.float):
 
     return points
 
+def get_xyzi_points(cloud_array, remove_nans=True, dtype=np.float):
+    '''Pulls out x, y, and z columns from the cloud recordarray, and returns
+	a 3xN matrix.
+    '''
+    # remove crap points
+    if remove_nans:
+        mask = np.isfinite(cloud_array['x']) & np.isfinite(cloud_array['y']) & np.isfinite(
+            cloud_array['z']) & np.isfinite(cloud_array['intensity'])
+        cloud_array = cloud_array[mask]
+
+    # pull out x, y, and z values
+    points = np.zeros(cloud_array.shape + (4,), dtype=dtype)
+    points[..., 0] = cloud_array['x']
+    points[..., 1] = cloud_array['y']
+    points[..., 2] = cloud_array['z']
+    points[..., 3] = cloud_array['intensity']
+    return points
+
 def pointcloud2_to_xyz_array(cloud_msg, remove_nans=True):
     return get_xyz_points(pointcloud2_to_array(cloud_msg), remove_nans=remove_nans)
+
+def pointcloud2_to_xyzi_array(cloud_msg, remove_nans=True):
+    return get_xyzi_points(pointcloud2_to_array(cloud_msg), remove_nans=remove_nans)
