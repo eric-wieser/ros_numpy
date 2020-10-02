@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <package>
   <name>ros_numpy</name>
-  <version>0.0.3</version>
+  <version>0.0.4</version>
   <description>A collection of conversion function for extracting numpy arrays from messages</description>
 
   <maintainer email="wieser@mit.edu">Eric Wieser</maintainer>
-
+  <maintainer email="stavrinosgeo@gmail.com">George Stavrinos</maintainer>
+  
   <license>MIT</license>
 
   <url type="website">http://wiki.ros.org/ros_numpy</url>
