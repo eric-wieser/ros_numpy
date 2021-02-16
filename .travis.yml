@@ -21,12 +21,13 @@ before_install:
   - export ROSINSTALL_FILE=$CI_SOURCE_PATH/dependencies.rosinstall
   - export CATKIN_OPTIONS=$CI_SOURCE_PATH/catkin.options
   - export ROS_PARALLEL_JOBS='-j8 -l6'
+  - export PYTHON_NAME=$([[ $(lsb_release -cs) = focal ]] && echo python3 || echo python)
   # Install ROS
   - sudo sh -c "echo \"deb http://packages.ros.org/ros-shadow-fixed/ubuntu $ROS_CI_DESKTOP main\" > /etc/apt/sources.list.d/ros-latest.list"
   - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
   - sudo apt-get update -qq
   # Install ROS
-  - sudo apt-get install -y python-catkin-pkg python-catkin-tools python-rosdep python-wstool ros-$ROS_DISTRO-catkin
+  - sudo apt-get install -y $PYTHON_NAME-catkin-pkg $PYTHON_NAME-catkin-tools $PYTHON_NAME-rosdep $PYTHON_NAME-wstool ros-$ROS_DISTRO-catkin
   - source /opt/ros/$ROS_DISTRO/setup.bash
   # Setup for rosdep
   - sudo rosdep init
