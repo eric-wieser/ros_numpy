@@ -27,7 +27,7 @@ before_install:
   - wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
   - sudo apt-get update -qq
   # Install ROS
-  - sudo apt-get install -y $PYTHON_NAME-catkin-pkg $PYTHON_NAME-catkin-tools $PYTHON_NAME-rosdep $PYTHON_NAME-wstool ros-$ROS_DISTRO-catkin
+  - sudo apt-get install -y $PYTHON_NAME-catkin-pkg $PYTHON_NAME-catkin-tools $PYTHON_NAME-rosdep $PYTHON_NAME-wstool $PYTHON_NAME-osrf-pycommon ros-$ROS_DISTRO-catkin
   - source /opt/ros/$ROS_DISTRO/setup.bash
   # Setup for rosdep
   - sudo rosdep init
