@@ -1,13 +1,21 @@
 sudo: required
-dist: trusty
 language: generic
-env:
-  - ROS_DISTRO=indigo
-  - ROS_DISTRO=jade
+# Build matrix
+jobs:
+  include:
+    - os: linux
+      dist: xenial
+      env: ROS_DISTRO=kinetic
+    - os: linux
+      dist: bionic
+      env: ROS_DISTRO=melodic
+    - os: linux
+      dist: focal
+      env: ROS_DISTRO=noetic
 # Install system dependencies, namely ROS.
 before_install:
   # Define some config vars.
-  - export ROS_CI_DESKTOP=`lsb_release -cs`  # e.g. [precise|trusty]
+  - export ROS_CI_DESKTOP=`lsb_release -cs`  # e.g. [xenial|bionic|focal]
   - export CI_SOURCE_PATH=$(pwd)
   - export REPOSITORY_NAME=${PWD##*/}
   - export ROSINSTALL_FILE=$CI_SOURCE_PATH/dependencies.rosinstall
