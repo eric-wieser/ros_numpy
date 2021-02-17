@@ -20,7 +20,6 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
-  <exec_depend>geometry</exec_depend>
 
   <buildtool_depend>catkin</buildtool_depend>
 
