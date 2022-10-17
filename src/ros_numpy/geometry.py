@@ -111,14 +111,14 @@ def numpy_to_pose(arr):
 		quat = transformations.quaternion_from_matrix(arr)
 
 		return Pose(
-			position=Vector3(*trans),
+			position=Point(*trans),
 			orientation=Quaternion(*quat)
 		)
 	else:
 		res = np.empty(shape, dtype=np.object_)
 		for idx in np.ndindex(shape):
 			res[idx] = Pose(
-				position=Vector3(*transformations.translation_from_matrix(arr[idx])),
+				position=Point(*transformations.translation_from_matrix(arr[idx])),
 				orientation=Quaternion(*transformations.quaternion_from_matrix(arr[idx]))
 			)
 
