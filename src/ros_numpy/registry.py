@@ -27,7 +27,7 @@ def numpify(msg, *args, **kwargs):
 		return
 
 	conv = _to_numpy.get((msg.__class__, False))
-	if not conv and isinstance(msg, collections.Sequence):
+	if not conv and isinstance(msg, collections.abc.Sequence):
 		if not msg:
 			raise ValueError("Cannot determine the type of an empty Collection")
 		conv = _to_numpy.get((msg[0].__class__, True))
