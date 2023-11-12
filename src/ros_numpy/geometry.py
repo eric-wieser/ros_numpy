@@ -1,5 +1,6 @@
 from .registry import converts_from_numpy, converts_to_numpy
 from geometry_msgs.msg import Transform, Vector3, Quaternion, Point, Pose
+from geometry_msgs.msg import TransformStamped, Vector3Stamped, QuaternionStamped, PointStamped, PoseStamped
 from . import numpify
 
 import numpy as np
@@ -12,6 +13,10 @@ def vector3_to_numpy(msg, hom=False):
 		return np.array([msg.x, msg.y, msg.z, 0])
 	else:
 		return np.array([msg.x, msg.y, msg.z])
+
+@converts_to_numpy(Vector3Stamped)
+def vector3stamped_to_numpy(msg, hom=False):
+	return vector3_to_numpy(msg.vector, hom)
 
 @converts_from_numpy(Vector3)
 def numpy_to_vector3(arr):
@@ -31,6 +36,10 @@ def point_to_numpy(msg, hom=False):
 	else:
 		return np.array([msg.x, msg.y, msg.z])
 
+@converts_to_numpy(PointStamped)
+def pointstamped_to_numpy(msg, hom=False):
+	return point_to_numpy(msg.point, hom)
+
 @converts_from_numpy(Point)
 def numpy_to_point(arr):
 	if arr.shape[-1] == 4:
@@ -44,6 +53,10 @@ def numpy_to_point(arr):
 @converts_to_numpy(Quaternion)
 def quat_to_numpy(msg):
 	return np.array([msg.x, msg.y, msg.z, msg.w])
+
+@converts_to_numpy(QuaternionStamped)
+def quatstamped_to_numpy(msg):
+	return quat_to_numpy(msg.quaternion)
 
 @converts_from_numpy(Quaternion)
 def numpy_to_quat(arr):
@@ -66,6 +79,10 @@ def transform_to_numpy(msg):
         transformations.translation_matrix(numpify(msg.translation)),
         transformations.quaternion_matrix(numpify(msg.rotation))
     )
+
+@converts_to_numpy(TransformStamped)
+def transformstamped_to_numpy(msg):
+	return transform_to_numpy(msg.transform)
 
 @converts_from_numpy(Transform)
 def numpy_to_transform(arr):
@@ -98,6 +115,10 @@ def pose_to_numpy(msg):
         transformations.translation_matrix(numpify(msg.position)),
         transformations.quaternion_matrix(numpify(msg.orientation))
     )
+
+@converts_to_numpy(PoseStamped)
+def posestamped_to_numpy(msg):
+	return pose_to_numpy(msg.pose)
 
 @converts_from_numpy(Pose)
 def numpy_to_pose(arr):
